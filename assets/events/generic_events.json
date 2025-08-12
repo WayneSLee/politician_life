@@ -1,0 +1,110 @@
+[
+  {
+    "id": "EVT_MEET_REPORTER",
+    "description": "你在跑行程的途中，遇到一位知名媒體的記者，他希望採訪你對近期一個社會議題的看法。",
+    "trigger": null,
+    "choices": [
+      {
+        "description": "親切地接受採訪，並闡述自己的觀點。",
+        "effects": [
+          { "type": "gainFame", "value": 5 },
+          { "type": "changeWorldStat", "stat": "socialAtmosphere", "value": 3 }
+        ]
+      },
+      {
+        "description": "以「行程繁忙」為由，微笑婉拒採訪。",
+        "effects": [
+          { "type": "gainFame", "value": -3 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EVT_MEET_TERRY_GOU_1",
+    "description": "遇到郭台銘，你猶豫要如何應對?",
+    "trigger": { "player_fame": { "operator": ">", "value": 50 } },
+    "choices": [
+      {
+        "description": "上前搭話",
+        "effects": [ { "type": "gainFame", "value": 5 } ]
+      },
+      {
+        "description": "視而不見",
+        "effects": []
+      }
+    ]
+  },
+  {
+    "id": "EVT_FOUND_MONEY",
+    "description": "坐高鐵時，撿到一個黑布袋，裡面裝著兩百萬",
+    "trigger": null,
+    "choices": [
+      {
+        "description": "假裝是自己的，把黑布袋帶走",
+        "effects": [
+          { "type": "gainMoney", "value": 2000000 },
+          { "type": "changeWorldStat", "stat": "socialAtmosphere", "value": -2 }
+        ]
+      },
+      {
+        "description": "交給警察，當一個好公民",
+        "effects": [
+          { "type": "gainFame", "value": 10 },
+          { "type": "changeWorldStat", "stat": "socialAtmosphere", "value": 5 },
+          { "type": "playAnimation", "path": "assets/animations/test.json" }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EVT_PROTEST",
+    "description": "經濟持續低迷，民怨四起，一群失業的勞工聚集在政府前抗議！",
+    "trigger": { "world_economyIndex": { "operator": "<", "value": -30 } },
+    "choices": [
+      {
+        "description": "出面安撫，承諾會提出解決方案",
+        "effects": [
+          { "type": "gainFame", "value": 10 },
+          { "type": "changeWorldStat", "stat": "socialAtmosphere", "value": 10 }
+        ]
+      },
+      {
+        "description": "認為這是無理取鬧，不予理會",
+        "effects": [
+          { "type": "gainFame", "value": -15 },
+          { "type": "changeWorldStat", "stat": "socialAtmosphere", "value": -20 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EVT_MEET_NEW_FRIEND",
+    "description": "你受邀參加一場大型的產業交流晚宴，會場上人聲鼎沸。",
+    "trigger": null,
+    "choices": [
+      {
+        "description": "主動出擊，四處交換名片。",
+        "action_id": "ACTION_CREATE_NEW_FRIEND"
+      },
+      {
+        "description": "只跟認識的人聊天，或獨自品嚐美食。",
+        "effects": []
+      }
+    ]
+  },
+  {
+    "id": "EVT_JOIN_PARTY",
+    "description": "你的一位政壇前輩，{NPC_NAME}，看中了你的潛力。他所屬的 {PARTY_NAME} 最近正在招募新血，他正式向你發出了邀請。",
+    "trigger": { "custom": "CAN_JOIN_PARTY" },
+    "choices": [
+      {
+        "description": "答應邀約，加入該政黨！",
+        "action_id": "ACTION_ACCEPT_PARTY_INVITATION"
+      },
+      {
+        "description": "婉拒邀請，維持獨立之身。",
+        "effects": [ { "type": "gainFame", "value": 5 } ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,112 @@
+[
+  {
+    "id": "EVT_ENGINEER_PROJECT_BID",
+    "description": "您任職的公司正在爭取一個政府的科技園區標案，您的專業知識似乎能派上用場。",
+    "trigger": { "profession": "engineer" },
+    "choices": [
+      {
+        "description": "主動向主管提出計畫，協助公司",
+        "effects": [
+          { "type": "gainFame", "value": 5 },
+          { "type": "gainMoney", "value": 50000 }
+        ]
+      },
+      {
+        "description": "事不關己，專注在自己的工作上",
+        "effects": [
+          { "type": "changeWorldStat", "stat": "economyIndex", "value": -5 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EVT_GANGSTER_POLICE_CHECK",
+    "description": "遇到警察盤查，你有點心虛，該怎麼辦?!",
+    "trigger": { "profession": "gangster" },
+    "choices": [
+      {
+        "description": "默默配合警察盤查",
+        "action_id": "ACTION_GANGSTER_COOPERATE_CHECK"
+      },
+      {
+        "description": "衝撞警察跑走",
+        "action_id": "ACTION_GANGSTER_RUN_FROM_CHECK"
+      }
+    ]
+  },
+  {
+    "id": "EVT_POLITICIAN_PETITION",
+    "description": "選民來陳情，希望你可以幫忙關說",
+    "trigger": { "profession": "politician" },
+    "choices": [
+      {
+        "description": "很有信心覺得可以順利，接受了選民的陳情",
+        "action_id": "ACTION_HANDLE_PETITION"
+      },
+      {
+        "description": "覺得不應該處理這種案子，狠心拒絕",
+        "action_id": "ACTION_REJECT_PETITION"
+      }
+    ]
+  },
+  {
+    "id": "EVT_BUSINESSMAN_STOCK_MARKET",
+    "description": "股市出現劇烈波動，一個高風險的投資機會擺在眼前。",
+    "trigger": { "profession": "businessman" },
+    "choices": [
+      {
+        "description": "投入大筆資金，賭一把！",
+        "action_id": "ACTION_BUSINESSMAN_GAMBLE_STOCK"
+      },
+      {
+        "description": "穩健為上，保持觀望。",
+        "effects": []
+      }
+    ]
+  },
+  {
+    "id": "EVT_MEET_TERRY_GOU_2",
+    "description": "遇到郭台銘，他似乎對你這位「高科技背景」的年輕人很感興趣。",
+    "trigger": { "profession": "engineer", "player_fame": { "operator": ">", "value": 50 } },
+    "choices": [
+      {
+        "description": "積極跟他推銷自己的想法",
+        "effects": [ { "type": "gainMoney", "value": 500000 } ]
+      },
+      {
+        "description": "默默的聽他說話",
+        "effects": [ { "type": "gainFame", "value": 10 } ]
+      }
+    ]
+  },
+  {
+    "id": "EVT_SMEAR_CAMPAIGN",
+    "description": "執政黨對你抹紅",
+    "trigger": { "profession": "politician", "world_socialAtmosphere": { "operator": "<", "value": 10 } },
+    "choices": [
+      {
+        "description": "花錢宣傳，強力否認",
+        "action_id": "ACTION_SMEAR_CAMPAIGN_DENY"
+      },
+      {
+        "description": "認為這是無理取鬧，決定冷處理",
+        "action_id": "ACTION_SMEAR_CAMPAIGN_IGNORE"
+      }
+    ]
+  },
+  {
+    "id": "EVT_MEET_SENIOR_COLLEAGUE",
+    "description": "在辦公室的茶水間，你遇到了你的前輩「王前輩」，他看起來心情不錯。",
+    "trigger": { "custom": "HAS_NPC_WANG" },
+    "choices": [
+      {
+        "description": "上前打招呼，並請教最近工作上的問題。",
+        "action_id": "ACTION_GREET_WANG"
+      },
+      {
+        "description": "點頭致意，然後默默地去做自己的事。",
+        "action_id": "ACTION_IGNORE_WANG"
+      }
+    ]
+  }
+]

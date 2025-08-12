@@ -1,0 +1,34 @@
+name: politician_life
+description: "A Game"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  flame: ^1.30.1
+  lottie: ^3.3.1
+  audioplayers: ^6.5.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/events/
+    - assets/images/
+    - assets/fonts/
+    - assets/animations/
+    - assets/story/
+    - assets/audio/
+  fonts:
+    - family: NotoSansTC  # 我們為這個字體家族取一個名字
+      fonts:
+        - asset: assets/fonts/NotoSansTC-Regular.ttf

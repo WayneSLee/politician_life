@@ -1,0 +1,22 @@
+[
+  {
+    "id": "EVT_MEET_REPORTER",
+    "description": "你在跑行程的途中，遇到一位知名媒體的記者，他希望採訪你對近期一個社會議題的看法。",
+    "trigger": null,
+    "choices": [
+      {
+        "description": "親切地接受採訪，並闡述自己的觀點。",
+        "effects": [
+          { "type": "gainFame", "value": 5 },
+          { "type": "changeWorldStat", "stat": "socialAtmosphere", "value": 3 }
+        ]
+      },
+      {
+        "description": "以「行程繁忙」為由，微笑婉拒採訪。",
+        "effects": [
+          { "type": "gainFame", "value": -3 }
+        ]
+      }
+    ]
+  }
+]
