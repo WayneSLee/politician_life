@@ -1,0 +1,108 @@
+[
+  {
+    "id": "CAMP_STREET_CANVASSING",
+    "description": "跑選舉的基本功！團隊安排了一場到傳統市場的掃街拜票活動，與選民近距離接觸。",
+    "trigger": null,
+    "choices": [
+      {
+        "description": "熱情地握遍每一雙手 (-10,000 金錢)",
+        "conditions": {
+          "player_money": { "operator": ">=", "value": 10000 }
+        },
+        "effects": [
+          { "type": "spendMoney", "value": 10000 },
+          { "type": "gainFame", "value": 5 }
+        ]
+      },
+      {
+        "description": "保持微笑，重點式拜訪樁腳店家即可 (-5,000 金錢)",
+        "conditions": {
+          "player_money": { "operator": ">=", "value": 5000 }
+        },
+        "effects": [
+          { "type": "spendMoney", "value": 5000 },
+          { "type": "gainFame", "value": 2 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "CAMP_POLICY_DEBATE",
+    "description": "電視台邀請所有候選人參加一場關於都市發展的政策辯論會。",
+    "trigger": null,
+    "choices": [
+      {
+        "description": "做足萬全準備，正面迎戰！",
+        "effects": [
+          { "type": "gainFame", "value": 10 }
+        ]
+      },
+      {
+        "description": "以市政繁忙為由，宣布不出席辯論會。",
+        "effects": [
+          { "type": "gainFame", "value": -8 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "CAMP_STREET_ADS",
+    "description": "猶豫是否要購買路邊大型廣告看板?",
+    "trigger": null,
+    "choices": [
+      {
+        "description": "買下最大型的看板 (-300,000 金錢)",
+        "conditions": {
+          "player_money": { "operator": ">=", "value": 300000 }
+        },
+        "effects": [
+          { "type": "spendMoney", "value": 300000 },
+          { "type": "gainFame", "value": 20 }
+        ]
+      },
+      {
+        "description": "買下最小型的看板 (-100,000 金錢)",
+        "conditions": {
+          "player_money": { "operator": ">=", "value": 100000 }
+        },
+        "effects": [
+          { "type": "spendMoney", "value": 100000 },
+          { "type": "gainFame", "value": 10 }
+        ]
+      },
+      {
+        "description": "經費實在捉襟見肘，決定先不要亂花錢",
+        "effects": [
+          { "type": "gainFame", "value": -10 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "CAMP_RALLY_EVENT",
+    "description": "選戰進入白熱化，團隊建議舉辦一場大型造勢晚會，凝聚支持者的向心力，並向對手展現實力。",
+    "trigger": null,
+    "choices": [
+      {
+        "description": "全力一搏！舉辦大型造勢晚會！ (-$1,000,000)",
+        "action_id": "ACTION_HOLD_RALLY",
+        "conditions": {
+          "player_money": { "operator": ">=", "value": 1000000 }
+        }
+      },
+      {
+        "description": "經費有限，改為舉辦小型粉絲見面會。 (-$50,000)",
+        "action_id": "ACTION_HOLD_MEETUP",
+        "conditions": {
+          "player_money": { "operator": ">=", "value": 50000 }
+        }
+      },
+      {
+        "description": "資金不足，暫緩舉辦任何活動。",
+        "effects": [
+          { "type": "gainFame", "value": -5 }
+        ]
+      }
+    ]
+  }
+]

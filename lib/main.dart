@@ -31,6 +31,18 @@ String partyToString(Party party) {
   }
 }
 
+String formatLargeNumber(int number) {
+  if (number >= 1000000000) { // 十億 (Billion)
+    return '${(number / 1000000000).toStringAsFixed(2)} B';
+  } else if (number >= 1000000) { // 百萬 (Million)
+    return '${(number / 1000000).toStringAsFixed(2)} M';
+  } else if (number >= 1000) { // 千 (Kilo)
+    return '${(number / 1000).toStringAsFixed(1)} K';
+  } else {
+    return number.toString();
+  }
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
@@ -143,10 +155,14 @@ class _GameUIState extends State<GameUI> with WidgetsBindingObserver {
             currentView = const CircularProgressIndicator(color: Colors.white);
             break;
           case GamePhase.event:
+          case GamePhase.campaigning:
             currentView = buildEventView();
             break;
           case GamePhase.newsReport:
             currentView = buildNewsReportView();
+            break;
+          case GamePhase.electionResults:
+            currentView = buildElectionResultsView();
             break;
           case GamePhase.endOfDay:
             currentView = buildEndOfDayView();
@@ -275,7 +291,7 @@ class _GameUIState extends State<GameUI> with WidgetsBindingObserver {
             child: InfoRow(
               icon: Icons.attach_money,
               label: '', // 標籤留空
-              value: '${widget.game.player?.money ?? 0}', // 數字靠左對齊
+              value: formatLargeNumber(widget.game.player?.money ?? 0), // 數字靠左對齊
               color: Colors.white,
             ),
           ),
@@ -313,6 +329,19 @@ class _GameUIState extends State<GameUI> with WidgetsBindingObserver {
               ),
             ),
           ),
+          if (widget.game.isCandidate)
+            Container(
+              margin: const EdgeInsets.only(top: 8),
+              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+              decoration: BoxDecoration(
+                color: Colors.red.shade700,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                '競選活動進行中: ${widget.game.currentElection?.title ?? ""}',
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+            ),
         ],
       ),
     );
@@ -400,15 +429,63 @@ class _GameUIState extends State<GameUI> with WidgetsBindingObserver {
         ),
         const SizedBox(height: 24),
         ...widget.game.currentEvent!.choices.map((choice) {
+          // 【新增】在建立按鈕前，先判斷它是否啟用
+          bool enabled = true; // 預設為啟用
+          if (choice.isEnabled != null) {
+            enabled = choice.isEnabled!(widget.game.player!);
+          }
+
           return Padding(
             padding: const EdgeInsets.only(top: 8.0),
             child: ElevatedButton(
-              onPressed: () => widget.game.makeChoice(choice),
+              // 【核心修改】onPressed 根據 enabled 的值來決定
+              // 如果 enabled 是 true，就執行動作；如果是 false，就設為 null，按鈕會自動變灰
+              onPressed: enabled ? () => widget.game.makeChoice(choice) : null,
+
+              // 我們也可以根據是否啟用，來改變按鈕的樣式
+              style: ElevatedButton.styleFrom(
+                // 如果按鈕被禁用，給它一個深灰色
+                backgroundColor: enabled ? const Color(0xFFF5F5DC) : Colors.grey.shade800,
+                foregroundColor: enabled ? Colors.black87 : Colors.grey.shade500,
+              ),
               child: Text(choice.description, textAlign: TextAlign.center),
             ),
           );
         }).toList(),
       ],
+    );
+  }
+
+  Widget buildElectionResultsView() {
+    return Container(
+      padding: const EdgeInsets.all(24.0),
+      decoration: BoxDecoration(
+        color: widget.game.electionWon ? Colors.green.shade900.withOpacity(0.8) : Colors.red.shade900.withOpacity(0.8),
+        borderRadius: BorderRadius.circular(16.0),
+        border: Border.all(color: Colors.white38),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            widget.game.electionWon ? '【勝選快報】' : '【敗選聲明】',
+            style: const TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+          const Divider(color: Colors.white54, height: 32),
+          Text(
+            widget.game.electionResultMessage,
+            style: const TextStyle(fontSize: 18, color: Colors.white, height: 1.5),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton(
+            onPressed: () => widget.game.finalizeElection(),
+            child: const Text('發表感言'),
+          ),
+        ],
+      ),
     );
   }
 

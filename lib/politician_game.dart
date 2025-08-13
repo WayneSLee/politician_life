@@ -13,6 +13,7 @@ import 'package:politician_life/player.dart';
 import 'package:politician_life/profession.dart';
 import 'package:politician_life/party.dart';
 import 'package:politician_life/audio_manager.dart';
+import 'package:politician_life/election.dart';
 
 class PoliticianGame extends FlameGame with ChangeNotifier {
   Player? player;
@@ -24,12 +25,13 @@ class PoliticianGame extends FlameGame with ChangeNotifier {
   String? currentAnimationPath;
   Timer? _animationTimer;
   late final AudioManager audioManager;
-
-
-  // 【新增】日曆系統變數
+  Election? currentElection;
+  bool isCandidate = false; // 玩家是否為候選人
   int dayOfWeek = 1;  // 1週5天
   int weekOfYear = 1; // 1年12週
   int year = 1;       // 第幾年
+  bool electionWon = false;
+  String electionResultMessage = '';
 
   Map<String, dynamic> _newsData = {};
   List<String> currentNewsHeadlines = [];
@@ -164,10 +166,68 @@ class PoliticianGame extends FlameGame with ChangeNotifier {
     eventManager = EventManager(player: player!, game: this);
     await eventManager.loadEvents();
 
+    if (year <= 4) {
+      scheduleNextElection();
+    }
+
     triggerNewEvent();
     isLoading = false;
     currentPhase = GamePhase.event;
     audioManager.playMainBgm();
+    notifyListeners();
+  }
+
+  void scheduleNextElection() {
+    // 假設選舉每 4 年一次
+    currentElection = Election(title: '第 ${ (year ~/ 4) + 1 } 屆里長選舉');
+    print('新的選舉已安排在 4 年後: ${currentElection!.title}');
+  }
+
+  void calculateElectionResults() {
+    if (player == null) return;
+
+    // 這是一個非常基礎的計票公式，未來可以擴充得更複雜
+    // 基礎勝率 30%
+    double winChance = 0.3;
+
+    // 名聲越高，勝率越高 (每 100 點名聲增加 10% 勝率)
+    winChance += (player!.fame / 1000);
+
+    // 金錢越多，勝率越高 (每 100 萬金錢增加 5% 勝率)
+    winChance += (player!.money / 20000000);
+
+    // 確保勝率不會超過 95%
+    if (winChance > 0.95) winChance = 0.95;
+
+    print('玩家最終勝率為: $winChance');
+
+    // 根據勝率進行一次隨機判定
+    if (Random().nextDouble() < winChance) {
+      electionWon = true;
+      electionResultMessage = '恭喜！經過激烈的競爭，您成功當選，開啟了您政治生涯的新篇章！';
+      player!.gainFame(100); // 當選大幅增加名聲
+      // 未來可以改變玩家的職業
+      // player.currentProfession = Profession.councilor;
+    } else {
+      electionWon = false;
+      electionResultMessage = '可惜... 您以些微的差距落敗。但這次的挑戰讓更多人認識了您，下次再來！';
+      player!.gainFame(20); // 敗選也能增加一些名聲
+    }
+
+    // 進入選舉結果階段
+    currentPhase = GamePhase.electionResults;
+  }
+
+  void finalizeElection() {
+    isCandidate = false;
+    currentElection = null; // 清除本次選舉
+
+    // 重新安排下一次選舉
+    scheduleNextElection();
+
+    // 觸發一個新的日常事件，回歸正常生活
+    triggerNewEvent();
+    currentPhase = GamePhase.event;
     notifyListeners();
   }
 
@@ -190,29 +250,54 @@ class PoliticianGame extends FlameGame with ChangeNotifier {
   void nextDay() {
     if (player == null) return;
 
+    print('--- Day Start: Year $year, Week $weekOfYear, Day $dayOfWeek ---');
+
+    // 領薪水
     final job = professionData[player!.currentProfession];
     if (job != null) {
       player!.gainMoney(job['salary'] as int);
     }
 
+    // 日期推進
     dayOfWeek++;
 
+    // 檢查是否為選舉日
+    if (year % 4 == 0 && weekOfYear == 12 && dayOfWeek > 5 && isCandidate) {
+      calculateElectionResults();
+      notifyListeners();
+      return;
+    }
+
+    // 檢查是否過完一週
     if (dayOfWeek > 5) {
       dayOfWeek = 1;
       weekOfYear++;
-      // 【修改】在進入新聞階段前，先產生新聞內容
       generateNewsReport();
       currentPhase = GamePhase.newsReport;
     } else {
+      // 【核心修正】即使還沒過完一週，也要觸發新事件並設定階段
       triggerNewEvent();
       currentPhase = GamePhase.event;
     }
 
+    // 檢查是否過完一年
     if (weekOfYear > 12) {
       weekOfYear = 1;
       year++;
       player!.ageUp();
+
+      if (year % 4 == 1 && year > 1) {
+        scheduleNextElection();
+      }
     }
+
+    // 印出選舉狀態以供除錯
+    if (currentElection != null) {
+      print('Current Election Status: ${currentElection!.status.toString()}');
+    } else {
+      print('Current Election Status: null (No upcoming election)');
+    }
+    print('----------------------------------------------------');
 
     notifyListeners();
   }
@@ -258,6 +343,14 @@ class PoliticianGame extends FlameGame with ChangeNotifier {
         // 如果真的找不到，給一個預設的描述，避免樣板文字出現
         description = description.replaceAll('{NPC_NAME}', '一位神秘的前輩');
         description = description.replaceAll('{PARTY_NAME}', '一個秘密組織');
+      }
+    }
+
+    if (description.contains('{ELECTION_TITLE}')) {
+      if (currentElection != null) {
+        description = description.replaceAll('{ELECTION_TITLE}', currentElection!.title);
+      } else {
+        description = description.replaceAll('{ELECTION_TITLE}', '即將到來的選舉');
       }
     }
 

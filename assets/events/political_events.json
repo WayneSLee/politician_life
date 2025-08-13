@@ -1,0 +1,32 @@
+[
+  {
+    "id": "EVT_ANNOUNCE_CANDIDACY",
+    "description": "新一屆的選舉（{ELECTION_TITLE}）即將到來，地方上已經有不少人開始摩拳擦掌。以你目前的聲望，似乎也有了挑戰的資本。",
+    "trigger": {
+      "custom": "CAN_RUN_FOR_ELECTION",
+      "player_fame": {
+        "operator": ">",
+        "value": 1
+      },
+      "player_age": {
+        "operator": ">=",
+        "value": 23
+      }
+    },
+    "choices": [
+      {
+        "description": "宣布參選！投入這場龍爭虎鬥！",
+        "action_id": "ACTION_RUN_FOR_OFFICE"
+      },
+      {
+        "description": "這次先觀望，累積實力等待下次機會。",
+        "effects": [
+          {
+            "type": "gainFame",
+            "value": 2
+          }
+        ]
+      }
+    ]
+  }
+]
