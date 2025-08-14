@@ -28,6 +28,7 @@ flutter:
     - assets/animations/
     - assets/story/
     - assets/audio/
+    - assets/data/
   fonts:
     - family: NotoSansTC  # 我們為這個字體家族取一個名字
       fonts:

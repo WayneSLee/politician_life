@@ -1,6 +1,9 @@
 import 'package:politician_life/profession.dart';
 import 'package:politician_life/npc.dart';
 import 'package:politician_life/party.dart';
+import 'package:politician_life/profession.dart';
+import 'package:politician_life/profession_data.dart';
+import 'package:politician_life/profession_service.dart';
 
 // 這是一個 class (類別)，你可以把它想像成一個藍圖，
 // 用來描述一個「玩家」物件應該包含哪些資料。
@@ -11,12 +14,18 @@ class Player {
   int fame;       // 名聲
   int age;        // 年齡
   Profession currentProfession; // 玩家當前的職業
+  int rankIndex;
   Map<String, Npc> relationships;
   Party affiliation;
 
   // 政治光譜 [-100, 100]
   int politicalSpectrum; // 政治光譜 (經濟)
   int socialSpectrum;    // 社會光譜 (社會)
+
+  ProfessionInfo get professionInfo => ProfessionService.getInfo(currentProfession);
+  ProfessionRank get currentRank => professionInfo.ranks[rankIndex];
+  String get currentTitle => currentRank.title;
+  double get currentSalary => currentRank.salary;
 
   // 構造函數 (Constructor)
   // 當我們創建一個新的 Player 物件時，這個函數會被呼叫，
@@ -30,7 +39,8 @@ class Player {
     required this.socialSpectrum,
     required this.currentProfession,
   }) : relationships = {},
-       affiliation = Party.independent;
+       affiliation = Party.independent,
+       rankIndex = 0;
 
   // 我們可以加上一些方便的方法(method)，例如增加名聲
   void gainFame(int amount) {
@@ -59,4 +69,14 @@ class Player {
     age += 1;
     print('時間流逝，玩家現在 ${age} 歲');
   }
+
+  void setJob(Profession newProfession, int newRankIndex) {
+    this.currentProfession = newProfession;
+    this.rankIndex = newRankIndex;
+  }
+  // ...
+  // [新增] 就職過渡期用的屬性
+  Profession? pendingProfession;
+  int? pendingRankIndex;
+  DateTime? inaugurationDate;
 }

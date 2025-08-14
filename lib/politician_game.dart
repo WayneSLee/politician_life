@@ -36,13 +36,6 @@ class PoliticianGame extends FlameGame with ChangeNotifier {
   Map<String, dynamic> _newsData = {};
   List<String> currentNewsHeadlines = [];
 
-  final Map<Profession, Map<String, dynamic>> professionData = {
-    Profession.engineer: {'title': '工程師', 'salary': 1500},
-    Profession.businessman: {'title': '商人', 'salary': 2500},
-    Profession.gangster: {'title': '黑道', 'salary': 3000},
-    Profession.politician: {'title': '政治幕僚', 'salary': 1200},
-  };
-
   int socialAtmosphere = 0;
   int economyIndex = 20;
 
@@ -204,18 +197,33 @@ class PoliticianGame extends FlameGame with ChangeNotifier {
     // 根據勝率進行一次隨機判定
     if (Random().nextDouble() < winChance) {
       electionWon = true;
-      electionResultMessage = '恭喜！經過激烈的競爭，您成功當選，開啟了您政治生涯的新篇章！';
-      player!.gainFame(100); // 當選大幅增加名聲
-      // 未來可以改變玩家的職業
-      // player.currentProfession = Profession.councilor;
+      electionResultMessage = '恭喜！您成功當選，開啟了您政治生涯的新篇章！';
+
+      // 1. 設定待就職資訊
+      player!.pendingProfession = Profession.electedrepresentative; // 假設選上後是政客
+      player!.pendingRankIndex = 0; // 假設是第一個職等 "里長"
+
+      // 2. 設定就職日 (例如：2週後)
+      int inaugurationWeek = weekOfYear + 2;
+      int inaugurationYear = year;
+      if (inaugurationWeek > 12) {
+        inaugurationWeek -= 12;
+        inaugurationYear++;
+      }
+      player!.inaugurationDate = {
+        'year': inaugurationYear,
+        'week': inaugurationWeek,
+        'day': 1 // 從週一開始
+      };
+
+      // 3. 進入等待就職階段
+      currentPhase = GamePhase.awaitingInauguration;
     } else {
       electionWon = false;
       electionResultMessage = '可惜... 您以些微的差距落敗。但這次的挑戰讓更多人認識了您，下次再來！';
       player!.gainFame(20); // 敗選也能增加一些名聲
+      currentPhase = GamePhase.electionResults;
     }
-
-    // 進入選舉結果階段
-    currentPhase = GamePhase.electionResults;
   }
 
   void finalizeElection() {
@@ -223,7 +231,9 @@ class PoliticianGame extends FlameGame with ChangeNotifier {
     currentElection = null; // 清除本次選舉
 
     // 重新安排下一次選舉
-    scheduleNextElection();
+    if (!electionWon) {
+      scheduleNextElection();
+    }
 
     // 觸發一個新的日常事件，回歸正常生活
     triggerNewEvent();
@@ -247,18 +257,47 @@ class PoliticianGame extends FlameGame with ChangeNotifier {
     currentEvent = eventManager.getRandomEvent();
   }
 
+  void _performInauguration() {
+    print("就職日到來！");
+    if (player == null || player!.pendingProfession == null) return;
+
+    // 1. 正式更新玩家職業
+    player!.setJob(player!.pendingProfession!, player!.pendingRankIndex!);
+    player!.gainFame(100); // 在就職時才給予大量名聲
+
+    // 2. 清理待就職狀態
+    player!.pendingProfession = null;
+    player!.pendingRankIndex = null;
+    player!.inaugurationDate = null;
+    isCandidate = false;
+
+    // 3. 重新安排下一次選舉
+    scheduleNextElection();
+
+    // 4. 顯示一個慶祝動畫或事件，然後回到正常事件循環
+    playAnimation('assets/animations/celebration.json'); // 假設您有這個動畫
+    triggerNewEvent();
+    currentPhase = GamePhase.event;
+  }
+
   void nextDay() {
     if (player == null) return;
-
+    if (currentPhase == GamePhase.awaitingInauguration) {
+      final date = player!.inaugurationDate!;
+      if (year == date['year'] && weekOfYear == date['week'] && dayOfWeek == date['day']) {
+        _performInauguration();
+        // 就職日當天完成就職即可，不用再往下執行 nextDay 的其他邏輯
+        notifyListeners();
+        return;
+      }
+    }
     print('--- Day Start: Year $year, Week $weekOfYear, Day $dayOfWeek ---');
 
     // 領薪水
     final job = professionData[player!.currentProfession];
-    if (job != null) {
-      player!.gainMoney(job['salary'] as int);
-    }
+    player!.gainMoney(player!.currentSalary);
 
-    // 日期推進
+    // 日期推進W
     dayOfWeek++;
 
     // 檢查是否為選舉日

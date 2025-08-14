@@ -6,6 +6,7 @@ import 'package:politician_life/party.dart';
 import 'package:politician_life/politician_game.dart';
 import 'package:politician_life/profession.dart';
 import 'package:lottie/lottie.dart';
+import 'package:politician_life/profession_service.dart';
 
 final PoliticianGame game = PoliticianGame();
 
@@ -46,6 +47,7 @@ String formatLargeNumber(int number) {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  await ProfessionService.load();
   runApp(const MyApp());
 }
 
@@ -403,9 +405,9 @@ class _GameUIState extends State<GameUI> with WidgetsBindingObserver {
           ElevatedButton(
             onPressed: () {
               if (_nameController.text.trim().isEmpty) return;
-              widget.game.selectProfession(Profession.politician, _nameController.text.trim());
+              widget.game.selectProfession(Profession.politicalstaffer, _nameController.text.trim());
             },
-            child: const Text('政治幕僚'),
+            child: const Text('政治工作者'),
           ),
         ],
       ),

@@ -1,0 +1,61 @@
+// assets/data/professions.json
+{
+  "engineer": {
+    "categoryName": "工程師",
+    "ranks": [
+      { "title": "助理軟體工程師", "salary": 35000 },
+      { "title": "軟體工程師", "salary": 50000 },
+      { "title": "高級工程師", "salary": 70000 }
+    ]
+  },
+  "politicalstaffer": {
+    "categoryName": "政治工作者",
+    "ranks": [
+      { "title": "助理", "salary": 15000 },
+      { "title": "高級助理", "salary": 30000 },
+      { "title": "有關係的助理", "salary": 80000 }
+    ]
+  },
+  "businessman": {
+    "categoryName": "商人",
+    "ranks": [
+      { "title": "小老闆", "salary": 28000 },
+      { "title": "董事長", "salary": 70000 },
+      { "title": "CEO", "salary": 100000 }
+    ]
+  },
+  "gangster": {
+    "categoryName": "黑道",
+    "ranks": [
+      { "title": "小混混", "salary": 10000 },
+      { "title": "堂主", "salary": 50000 },
+      { "title": "老大", "salary": 200000 }
+    ]
+  },
+  "electedrepresentative": {
+    "categoryName": "民意代表",
+    "ranks": [
+      { "title": "里長", "salary": 30000 },
+      { "title": "議員", "salary": 50000 },
+      { "title": "立法委員", "salary": 220000 }
+    ]
+  },
+  "electedofficial": {
+    "categoryName": "官員",
+    "ranks": [
+      { "title": "市長", "salary": 40000 },
+      { "title": "縣長", "salary": 120000 },
+      { "title": "直轄市長", "salary": 220000 },
+      { "title": "總統", "salary": 430000 }
+    ]
+  },
+  "appointedofficial": {
+    "categoryName": "行政官員",
+    "ranks": [
+      { "title": "署長", "salary": 80000 },
+      { "title": "局長", "salary": 120000 },
+      { "title": "部長", "salary": 180000 },
+      { "title": "行政院院長", "salary": 280000 }
+    ]
+  }
+}
